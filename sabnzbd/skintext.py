@@ -537,6 +537,7 @@ SKIN_TEXT = {
     'srv-timeout' : TT('Timeout'), #: Server timeout
     'srv-connections' : TT('Connections'), #: Server: amount of connections
     'srv-retention' : TT('Retention time'), #: Server's retention time in days
+    'srv-toggle_group' : TT('Throttling Toggle Group'), #: Group used to toggle and avoid throttling
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
     'srv-priority' : TT('Priority'), #: Server priority
     'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority

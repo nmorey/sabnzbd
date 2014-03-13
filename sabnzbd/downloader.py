@@ -59,7 +59,7 @@ TIMER_LOCK = RLock()
 
 class Server(object):
 
-    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, username=None,
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_type, send_group, toggle_group, username=None,
                  password=None, optional=False, retention=0, categories=None):
 
         # If no ssl is protocol set, used highest available one
@@ -84,6 +84,7 @@ class Server(object):
 
         self.username = username
         self.password = password
+        self.toggle_group = toggle_group
 
         self.categories = categories
 
@@ -212,6 +213,7 @@ class Downloader(Thread):
             categories = srv.categories()
             retention = float(srv.retention() * 24 * 3600)  # days ==> seconds
             send_group = srv.send_group()
+            toggle_group = srv.toggle_group()
             create = True
 
         if oldserver:
@@ -226,7 +228,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl,
-                                            ssl_type, send_group,
+                                            ssl_type, send_group, toggle_group,
                                             username, password, optional, retention, categories=categories))
 
         return

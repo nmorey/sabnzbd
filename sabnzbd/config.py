@@ -392,6 +392,7 @@ class ConfigServer(object):
         self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.categories = OptionList(name, 'categories', default_val=['Default'], add=False)
         self.notes = OptionStr(name, 'notes', '', add=False)
+        self.toggle_group = OptionStr(name, 'toggle_group', '', add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
@@ -400,7 +401,7 @@ class ConfigServer(object):
         """ Set one or more fields, passed as dictionary """
         for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
                    'ssl', 'ssl_type', 'send_group', 'enable', 'optional', 'retention', 'priority',
-                   'categories', 'notes'):
+                   'categories', 'notes', 'toggle_group'):
             try:
                 value = values[kw]
             except KeyError:
@@ -433,6 +434,7 @@ class ConfigServer(object):
         dict['priority'] = self.priority()
         dict['categories'] = self.categories()
         dict['notes'] = self.notes()
+        dict['toggle_group'] = self.toggle_group()
         return dict
 
     def delete(self):
