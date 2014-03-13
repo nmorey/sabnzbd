@@ -511,6 +511,7 @@ SKIN_TEXT = {
     'srv-timeout' : TT('Timeout'), #: Server timeout
     'srv-connections' : TT('Connections'), #: Server: amount of connections
     'srv-retention' : TT('Retention time'), #: Server's retention time in days
+    'srv-toggle_group' : TT('Throttling Toggle Group'), #: Group used to toggle and avoid throttling
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
     'srv-fillserver' : TT('Backup server'), #: Backup server tickbox
     'srv-optional' : TT('Optional'), #: Server optional tickbox

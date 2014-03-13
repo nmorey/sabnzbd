@@ -46,6 +46,10 @@
                     <input type="number" name="retention" id="retention" size="8" min="0" /> <i>$T('days')</i>
                 </div>
                 <div class="field-pair">
+                    <label class="config" for="toggle_group">$T('srv-toggle_group')</label>
+                    <input type="text" name="toggle_group" id="toggle_group" size="40" min="0" />
+                </div>
+                <div class="field-pair">
                     <label class="config" for="timeout">$T('srv-timeout')</label>
                     <input type="number" name="timeout" id="timeout" size="8" min="30" /> <i>$T('seconds')</i>
                 </div>
@@ -125,6 +129,10 @@
                 <div class="field-pair alt">
                     <label class="config" for="retention$cur">$T('srv-retention')</label>
                     <input type="number" name="retention" id="retention$cur" value="$servers[$server]['retention']" size="8" min="0" /> <i>$T('days')</i>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="toggle_group$cur">$T('srv-toggle_group')</label>
+                    <input type="text" name="toggle_group" id="toggle_group$cur" value="$servers[$server]['toggle_group']" size="40" min="0" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="timeout$cur">$T('srv-timeout')</label>

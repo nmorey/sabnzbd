@@ -62,6 +62,12 @@
         </label>
       </div>
       <div class="field-pair">
+        <label class="nocheck clearfix" for="toggle_group">
+          <span class="component-title">$T('srv-toggle_group')</span>
+          <input type="text" size="25" name="toggle_group"/>
+        </label>
+      </div>
+      <div class="field-pair">
         <label class="nocheck clearfix" for="timeout">
           <span class="component-title">$T('srv-timeout')</span>
           <input type="text" size="10" name="timeout"/> <i>$T('seconds')</i>
@@ -169,6 +175,12 @@
     <label class="nocheck clearfix" for="retention">
       <span class="component-title">$T('srv-retention')</span>
       <input type="text" size="10" name="retention" value="$servers[$server]['retention']" /> <i>$T('days')</i>
+    </label>
+  </div>
+  <div class="field-pair">
+    <label class="nocheck clearfix" for="toggle_group">
+      <span class="component-title">$T('srv-toggle_group')</span>
+      <input type="text" size="25" name="toggle_group" value="$servers[$server]['toggle_group']" />
     </label>
   </div>
   <div class="field-pair">

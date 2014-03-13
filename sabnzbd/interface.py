@@ -1673,7 +1673,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ('fillserver', 'ssl', 'enable', 'optional'):
+    for kw in ('fillserver', 'ssl', 'enable', 'optional', 'toggle_group'):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:

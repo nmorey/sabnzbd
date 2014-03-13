@@ -360,6 +360,7 @@ class ConfigServer(object):
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
+        self.toggle_group = OptionStr(name, 'toggle_group', '', add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
@@ -367,7 +368,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
-                   'fillserver', 'ssl', 'enable', 'optional', 'retention'):
+                   'fillserver', 'ssl', 'enable', 'optional', 'retention', 'toggle_group'):
             try:
                 value = values[kw]
             except KeyError:
@@ -393,6 +394,7 @@ class ConfigServer(object):
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()
+        dict['toggle_group'] = self.toggle_group()
         return dict
 
     def delete(self):

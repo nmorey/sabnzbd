@@ -18,6 +18,7 @@
       $T('srv-timeout'):<br><input type="text" size="25" name="timeout" value="120"><br>
       $T('srv-connections'):<br><input type="text" size="25" name="connections"><br>
       $T('srv-retention') ($T('days')):<br><input type="text" size="25" name="retention"><br>
+      $T('srv-toggle_group')):<br><input type="text" size="25" name="toggle_group"><br>
       <!--#if int($have_ssl) == 0#-->
         $T('srv-ssl') $T('opt-notInstalled')
       <!--#else#-->
@@ -43,6 +44,7 @@
       $T('srv-timeout'):<br><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']"><br>
       $T('srv-connections'):<br><input type="text" size="25" name="connections" value="$servers[$server]['connections']"><br>
       $T('srv-retention'):<br><input type="text" size="25" name="retention" value="$servers[$server]['retention']"><br>
+      $T('srv-toggle_group'):<br><input type="text" size="25" name="toggle_group" value="$servers[$server]['toggle_group']"><br>
       <!--#if int($have_ssl) == 0#-->
         $T('srv-ssl') $T('opt-notInstalled')
       <!--#else#-->
