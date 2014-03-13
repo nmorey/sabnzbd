@@ -59,6 +59,7 @@ class Server(object):
         self.id = id
         self.newid = None
         self.restart = False
+        self.toggle = None
         self.host = host
         self.port = port
         self.timeout = timeout
@@ -67,7 +68,7 @@ class Server(object):
         self.ssl = ssl
         self.optional = optional
         self.retention = retention
-
+	self.enabled_time = time.time()
         self.username = username
         self.password = password
         self.toggle_group = toggle_group
@@ -83,8 +84,9 @@ class Server(object):
         self.have_body = 'free.xsusenet.com' not in host
         self.have_stat = True # Assume server has "STAT", until proven otherwise
 
-        for i in range(threads):
-            self.idle_threads.append(NewsWrapper(self, i+1))
+        if not (toggle_group and fillserver):
+            for i in range(threads):
+                self.idle_threads.append(NewsWrapper(self, i+1))
 
     @property
     def hostip(self):
@@ -110,6 +112,13 @@ class Server(object):
                 writers.pop(fno)
             nw.terminate(quit=True)
         self.idle_threads = []
+
+    def do_restart(self):
+        # If we alreay have idle thread, we don't really need a restart ! 
+        if self.idle_threads:
+            return
+        for i in range(self.threads):
+            self.idle_threads.append(NewsWrapper(self, i+1))
 
     def __repr__(self):
         return "%s:%s" % (self.host, self.port)
@@ -149,7 +158,7 @@ class Downloader(Thread):
 
         self.read_fds = {}
         self.write_fds = {}
-
+        self.toggling = None
         self.servers = []
         self._timers = {}
 
@@ -159,6 +168,7 @@ class Downloader(Thread):
         self.decoder = Decoder(self.servers)
         Downloader.do = self
 
+    @synchronized_CV
     def init_server(self, oldserver, newserver):
         """ Setup or re-setup single server
             When oldserver is defined and in use, delay startup.
@@ -172,6 +182,7 @@ class Downloader(Thread):
         servers = config.get_servers()
         if newserver in servers:
             srv = servers[newserver]
+            logging.info("Recreating server %s\n", srv.host())
             enabled = srv.enable()
             host = srv.host()
             port = srv.port()
@@ -186,7 +197,22 @@ class Downloader(Thread):
             toggle_group = srv.toggle_group()
             retention = float(srv.retention() * 24 * 3600) # days ==> seconds
             create = True
-
+            if toggle_group and not oldserver:
+                # We are not toggling but lets make sure we are not supposed to be the backup server. WHatever the config says
+                if self.toggling == newserver:
+                    #We are disabling this erver ! This sucks ! 
+                    fillserver = False
+                elif self.toggling != None:
+                    #We are disabling another one, let's make sure we don't enable this one by error
+                    fillserver = False
+                else:
+                    #Assume we are alone in the toggle group. If we find another server in the group which is not in backup mode and
+                    # not out alter ego, let's be a backup server
+                    fillserver = False
+                    for alt_server in self.servers:
+                        if alt_server.toggle_group == toggle_group and alt_server.fillserver == False and alt_server.id != newserver:
+                            fillserver = True
+                            break
         if oldserver:
             for n in xrange(len(self.servers)):
                 if self.servers[n].id == oldserver:
@@ -203,6 +229,36 @@ class Downloader(Thread):
 
         return primary
 
+    @synchronized_CV
+    def do_toggle(self, server):
+        server.stop(self.read_fds, self.write_fds)
+        # Start the new server and make it primary
+        alt_server = server.toggle
+        alt_server.enabled_time = time.time()
+        alt_server.fillserver = False
+        alt_server.do_restart()
+        server.fillserver = True
+
+        # Remark the alternate active, just in case
+        # It should be marked as a fill server anyway
+        server.toggle = None
+        self.toggling = None
+        logging.info("Throttle toggle done")
+
+    @synchronized_CV
+    def prepare_toggle(self, server):
+        logging.debug("Preparing toggle!")
+        for alt_server in self.servers:
+            if alt_server != server and alt_server.fillserver == True and alt_server.toggle_group == server.toggle_group:
+                logging.info("Throttle toggle: swithing server %s ON", alt_server.host)
+                server.toggle = alt_server
+                self.toggling = server.id
+                return True
+
+        server.enabled_time = time.time()
+        logging.warning("Could not find a server to toggle")
+        return False
+        
     @synchronized_CV
     def set_paused_state(self, state):
         """ Set Downloader to specified paused state """
@@ -308,7 +364,8 @@ class Downloader(Thread):
 
         # Kick BPS-Meter to check quota
         BPSMeter.do.update()
-
+        throttle_toggle_time = cfg.throttle_toggle_time()
+        logging.info("Toggle time is %d", throttle_toggle_time)
         while 1:
             for server in self.servers:
                 assert isinstance(server, Server)
@@ -320,6 +377,17 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "timed out")
                         server.bad_cons += 1
                         self.maybe_block_server(server)
+
+                if self.toggling == server.id:
+                    if not server.busy_threads:
+                        self.do_toggle(server)
+                        # Force flush of the lists
+                        NzbQueue.do.reset_all_try_lists()
+                        continue
+                    else:
+                        # Restart pending, don't add new articles
+                        continue
+
                 if server.restart:
                     if not server.busy_threads:
                         newid = server.newid
@@ -336,11 +404,21 @@ class Downloader(Thread):
                         continue
 
                 assert isinstance(server, Server)
+                if self.toggling != None:
+                    continue
+
+                if (throttle_toggle_time > 0 and
+                    server.fillserver == False  and server.toggle_group and
+                    server.enabled_time + throttle_toggle_time < time.time()):
+                    if self.prepare_toggle(server) == True:
+                        continue
+
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
                 if not (server.active and NzbQueue.do.has_articles_for(server)):
                     continue
+
 
                 for nw in server.idle_threads[:]:
                     assert isinstance(nw, NewsWrapper)
