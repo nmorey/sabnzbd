@@ -1282,7 +1282,7 @@ SPECIAL_BOOL_LIST = \
             )
 SPECIAL_VALUE_LIST = \
             ( 'size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload', 'ipv6_servers'
+              'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload', 'ipv6_servers', 'throttle_toggle_time'
             )
 SPECIAL_LIST_LIST = \
     ( 'rss_odd_titles', 'prio_sort_list', 'rating_host'

@@ -250,6 +250,7 @@ unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 randomize_server_ip = OptionBool('misc', 'randomize_server_ip', False)
 ipv6_servers = OptionNumber('misc', 'ipv6_servers', 1, 0, 2)
+throttle_toggle_time = OptionNumber('misc', 'throttle_toggle_time', 0)
 
 # Internal options, not saved in INI file
 debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
