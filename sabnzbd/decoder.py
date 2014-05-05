@@ -205,7 +205,22 @@ class Decoder(Thread):
         for server in self.servers:
             if server.active and not article.server_in_try_list(server):
                 if server.fillserver:
-                    fill_server_found = True
+                    fill_found = True
+                    if server.toggle_group:
+                        # Make sure that we never tried anyone from this toggle group
+                        for tried_server in self.servers:
+                            if not article.server_in_try_list(tried_server):
+                                continue
+                            # We tried this one
+                            if tried_server.toggle_group and tried_server.toggle_group == server.toggle_group:
+                                # We tried on with the same toggle group id
+                                # There is no chance to find the article here so disable the fill server found
+                                fill_found = False
+                                break
+
+                    if fill_found == True:
+                        #If we truely find a fill server, let's flag it
+                        fill_server_found = True
                 else:
                     new_server_found = True
                     break
