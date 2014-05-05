@@ -381,8 +381,6 @@ class Downloader(Thread):
                 if self.toggling == server.id:
                     if not server.busy_threads:
                         self.do_toggle(server)
-                        # Force flush of the lists
-                        NzbQueue.do.reset_all_try_lists()
                         continue
                     else:
                         # Restart pending, don't add new articles
