@@ -283,7 +283,8 @@ def _api_queue_rating(output, value, kwargs):
             audio = setting if type == 'audio' and setting != "-" else None
             vote = vote_map[setting] if type == 'vote' else None
             flag = flag_map[setting] if type == 'flag' else None
-            Rating.do.update_user_rating(value, video, audio, vote, flag, kwargs.get('detail'))
+            if cfg.rating_enable():
+                Rating.do.update_user_rating(value, video, audio, vote, flag, kwargs.get('detail'))
             return report(output)
         except:
             return report(output, _MSG_BAD_SERVER_PARMS)
@@ -340,8 +341,11 @@ def _api_retry(name, output, kwargs):
     if name is None or isinstance(name, str) or isinstance(name, unicode):
         name = kwargs.get('nzbfile')
 
-    if retry_job(value, name):
-        return report(output)
+    nzo_id = retry_job(value, name)
+    if nzo_id:
+        if isinstance(nzo_id, list):
+            nzo_id = nzo_id[0]
+        return report(output, keyword='', data={'status' : True, 'nzo_id' : nzo_id})
     else:
         return report(output, _MSG_NO_ITEM)
 
@@ -1524,10 +1528,10 @@ def retry_job(job, new_nzb):
         history_db = cherrypy.thread_data.history_db
         path = history_db.get_path(job)
         if path:
-            repair_job(platform_encode(path), new_nzb)
+            nzo_id = repair_job(platform_encode(path), new_nzb)
             history_db.remove_history(job)
-            return True
-    return False
+            return nzo_id
+    return None
 
 
 #------------------------------------------------------------------------------

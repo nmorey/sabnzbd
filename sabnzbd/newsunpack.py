@@ -103,7 +103,10 @@ def find_programs(curdir):
         except:
             sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
 
-        sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
+        if sabnzbd.DARWIN_INTEL:
+            sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
+        else:
+            sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar-ppc')
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64 and cfg.allow_64bit_tools.get():
@@ -1138,7 +1141,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
-                    nzo.status = Status.FAILED
+                    nzo.status = Status.FETCHING
                     needed_blocks = avail_blocks
                     force = True
 

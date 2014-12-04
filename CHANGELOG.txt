@@ -1,4 +1,21 @@
 -------------------------------------------------------------------------------
+ 0.7.20 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Make sure that Rating support is suppressed completely when disabled.
+-------------------------------------------------------------------------------
+ 0.7.20RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Update unrar for (Snow)Leopard on Intel to 5.11
+- Logging of the Pystone performance of the system
+-------------------------------------------------------------------------------
+ 0.7.20RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- OSX unrar now really updated to 5.11
+- API call "Retry" now returns new job id
+- Support for NZB meta field 'x-rating-host'
+- Fix email test issue
+- Support of OSX Yosemite "Dark Mode"
+-------------------------------------------------------------------------------
  0.7.19 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Support double quotes to delineate parameters in category match lists.
