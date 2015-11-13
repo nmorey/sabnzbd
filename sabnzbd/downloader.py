@@ -240,7 +240,7 @@ class Downloader(Thread):
                     # not out alter ego, let's be a backup server
                     fillserver = False
                     for alt_server in self.servers:
-                        if alt_server.toggle_group == toggle_group and alt_server.fillserver == False and alt_server.id != newserver:
+                        if alt_server.toggle_group == toggle_group and alt_server.id != newserver:
                             fillserver = True
                             break
         if oldserver:
@@ -266,9 +266,7 @@ class Downloader(Thread):
         # Start the new server and make it primary
         alt_server = server.toggle
         alt_server.enabled_time = time.time()
-        alt_server.fillserver = False
         alt_server.do_restart()
-        server.fillserver = True
 
         # Remark the alternate active, just in case
         # It should be marked as a fill server anyway
@@ -280,7 +278,7 @@ class Downloader(Thread):
     def prepare_toggle(self, server):
         logging.debug("Preparing toggle!")
         for alt_server in self.servers:
-            if alt_server != server and alt_server.fillserver == True and alt_server.toggle_group == server.toggle_group:
+            if alt_server != server and alt_server.toggle_group == server.toggle_group:
                 logging.info("Throttle toggle: swithing server %s ON", alt_server.host)
                 server.toggle = alt_server
                 self.toggling = server.id
@@ -463,8 +461,7 @@ class Downloader(Thread):
                 if self.toggling != None:
                     continue
 
-                if (throttle_toggle_time > 0 and
-                    server.fillserver == False  and server.toggle_group and
+                if (throttle_toggle_time > 0 and server.toggle_group and
                     server.enabled_time + throttle_toggle_time < time.time()):
                     if self.prepare_toggle(server) == True:
                         continue
